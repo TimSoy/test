@@ -1,27 +1,37 @@
 <?php
 
-spl_autoload_register('Loader::loadClass');
-
 class Loader
-{
-    // private static $nameSpaces = [];
-    public static function addNamespacePath($name, $path) 
+{   
+    public static $namespaces = [];
+
+    public static function addNamespacePath($name, $path)
     {
-        // self::$nameSpaces[$name] = $path;
+        self::$namespaces[$name] = $path;         
     }
 
-    public static function loadClass($class) 
+    public static function register()
     {
-        $classParts = explode('\\', $class);
-        $classParts[0] = __DIR__;
-        $path = implode(DIRECTORY_SEPARATOR, $classParts) . '.php';
-        if (file_exists($path)) {
-            require_once($path);
+        spl_autoload_register('Loader::autoload');
+    }
+
+    public static function autoload($class)
+    {
+        $blocks = explode('\\', $class);
+        $name = array_shift($blocks) . '\\';
+        if (!empty(self::$namespaces[$name])) {
+            $path = self::$namespaces[$name] . '/' . implode('/', $blocks) . '.php';
+            require_once $path;
+        } else { 
+            foreach (self::$namespaces as $name) {
+                $path = $name . '/' . $class . '.php';
+                if (file_exists($path)) {
+                    require_once $path;
+                }
+            }
         }
     }
 }
 
+Loader::register();
 
-
-
-
+Loader::addNamespacePath('Framework\\',__DIR__);

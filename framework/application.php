@@ -2,18 +2,18 @@
 
 namespace Framework;
 
-class Application 
+class Application
 {	
-	public function __construct($text)
+	private static $config = [];
+
+	public function __construct($configPath)
 	{
-		echo $text . "<br>";
+		self::$config = include $configPath;
 	}
 
-	public function run() /* pageController frontController */
+	public function run()
 	{
-		echo date("G:i:s m.d.y");
+		$router = new \Framework\Router\Router(self::$config['routes']);
+		$router->getRoute();
 	}
 }
-
-/* 
-*/
