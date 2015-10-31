@@ -1,5 +1,5 @@
 <?php
-
+/* 
 namespace Framewor\Response;
 
 use Framewor\Response;

@@ -1,28 +1,45 @@
 <?php
 
 namespace Framework\Router;
-//use Framework\Request\Request;
+use Framework\DI\Service;
+use Framework\Request\Request;
 
 class Router
 {
-    public static $routes;
+    protected static $routes1 = [];
 
     public function __construct($route)
     {
-        self::$routes = $route;
+        self::$routes1 = $route;
     }
+
     public function getRoute()
     {	
-    	$uri = \Framework\Request\Request::getURI();
-    	$uris = explode('/', $_SERVER['REQUEST_URI']); 
-		if (array_key_exists($uris[1], self::$routes)) {
-			$controller = self::$routes[$uris[1]]['controller'];
-			$action     = self::$routes[$uris[1]]['action'];
-		}
+    	$url = Request::getURL(); 
 
-		//Reflection
+        foreach (self::$routes1 as $key => $value) {  
+            if (strpos($value['pattern'], '{')) {
+                $pattern = $this->patternToRegexp($value);
+            } else {
+                $pattern = $value['pattern'];
+            } 
+                
+            if (preg_match('~^'.$pattern.'$~', $url))
+            {
+                $routes = $value;
+            }
+        } 
+    return $routes; 
+    }
 
-		echo "<pre>"; var_dump($uris); echo "</pre>";
-        echo $action;
+    private function patternToRegexp($routes)
+    { 
+        preg_match_all('~\{\w+\}~', $routes['pattern'], $string);
+
+        foreach ($string[0] as $value) {
+            $replace = $routes['_requirements'][trim($value, '{}')];
+            $str = str_replace($string[0], $replace, $routes['pattern']);
+            return $str;
+        }
     }
 } 

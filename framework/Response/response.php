@@ -1,5 +1,5 @@
 <?php
-
+/*
 // setHeader(..);
 // setContent(..);
 // send();

@@ -2,7 +2,7 @@
 
 class Loader
 {   
-    public static $namespaces = [];
+    private static $namespaces = [];
 
     public static function addNamespacePath($name, $path)
     {
@@ -14,7 +14,7 @@ class Loader
         spl_autoload_register('Loader::autoload');
     }
 
-    public static function autoload($class)
+    private static function autoload($class)
     {
         $blocks = explode('\\', $class);
         $name = array_shift($blocks) . '\\';

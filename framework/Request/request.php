@@ -4,32 +4,36 @@ namespace Framework\Request;
 
 class Request 
 {
-    public static function getURI()
+
+    public static function getURL()
     {
         return trim($_SERVER['REQUEST_URI']);
     }
 
-	public function post($varname) {
-		return array_key_exists($varname, $_POST) ? $this->filter($_POST[$varname]) : NULL;
+    public function getMethod() {
+		return isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';    
 	}
 
-	public function get($varname) {
-		return array_key_exists($varname, $_GET) ? $this->filter($_GET[$varname]) : NULL;
-	}
-	
-	/*
-	public function isPost() {
-		return $this->getMethod();
-	}
+    public function get($varname) 
+    {
+        if($this->getMethod() === 'GET') {
+           $result = isset($_GET[$varname]) ? $this->filter($_GET[$varname]) : null;
+           return $result;
+        }
+    }
 
-	public function getMethod() {
-		$_SERVER['REQUST_METHOD'];
-	}
-	*/
+    public function post($varname) 
+    {
+        if($this->getMethod() === 'POST') {
+           $result = isset($_GET[$varname]) ? $this->filter($_GET[$varname]) : null;
+           return $result;
+        }
+    }
 
-	protected function filter($value) {
-		//$pattern = '/[\w\d_-]/i'
-		//непечатные символы
-		return $value;
-	}
+    protected function filter($value)
+    {
+        $value = preg_replace('/<\s*\/*\s*\w*>|[\$`~#<>\[\]\{\}\\\*\^%]/', "", trim($value));
+        return htmlspecialchars($value);
+    }
+
 }
